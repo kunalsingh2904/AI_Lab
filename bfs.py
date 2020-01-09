@@ -8,22 +8,23 @@ class Node:
         self.y = -1
 
     def __str__(self):
-        return self.value + str(self.x) + " " + str(self.y)
+        return self.value + " " + str(self.x) + " " + str(self.y) + " dis: " + str(self.dis)
 
 
 def get_adjacent(node):  # return neighbours of a node
     xx = node.x
     yy = node.y
-    print(xx, yy)
+    # print(xx, yy)
     adjacent = []
-    if xx-1 >= 0:
-        adjacent.append(array[xx-1][yy])
-    if xx+1 < row:
+    kk = ['+', '-', '|']
+    if xx+1 < row and array[xx+1][yy].value not in kk:
         adjacent.append(array[xx+1][yy])
-    if yy-1 >= 0:
-        adjacent.append(array[xx][yy-1])
-    if yy+1 < col:
+    if xx-1 >= 0 and array[xx-1][yy].value not in kk:
+        adjacent.append(array[xx-1][yy])
+    if yy+1 < col and array[xx][yy+1].value not in kk:
         adjacent.append(array[xx][yy+1])
+    if yy-1 >= 0 and array[xx][yy-1].value not in kk:
+        adjacent.append(array[xx][yy-1])
     return adjacent
 
 
@@ -32,20 +33,24 @@ temp_arr = list()  # temporary list having input values
 for line in file:
     line = line[0:(len(line)-1)]
     temp_arr.append(line)
-
+file.close()
 # print(temp_arr)
 array = list()  # list storing all values with node
 for i in range(len(temp_arr)):
-    temps = [Node()]*len(temp_arr[0])
-    array.append(temps)
+    kk = []
+    for j in range(len(temp_arr[0])):
+        temp = Node()
+        kk.append(temp)
+    array.append(kk)
 
 goal_x = -1
 goal_y = -1
 for i in range(len(temp_arr)):
-    for j in range(len(array[0])):
-        array[i][j].value = temp_arr[i][j]
-        array[i][j].x = i
-        array[i][j].y = j
+    for j in range(len(temp_arr[0])):
+        temp = array[i][j]
+        temp.value = temp_arr[i][j]
+        temp.x = i
+        temp.y = j
         if temp_arr[i][j] == '*':
             goal_x = i
             goal_y = j
@@ -53,33 +58,77 @@ for i in range(len(temp_arr)):
 row = len(array)
 col = len(array[0])
 # print("Dimension is:", row, col)
-# print("starting from node at", array[0][0].x, array[0][0].y)
+print("starting from node at", array[0][0].x, array[0][0].y)
+print("Goal is : ", goal_x, goal_y)
+print("\n")
+# for i in range(len(array)):
+#     print("length of {0} is {1}:".format(i, len(array[i])))
+#     for j in array[i]:
+#         print(j)
+#     print('\n')
 
 array[0][0].color = 'gray'
 array[0][0].dis = 1
-array[0][0].parent = None
-print(temp_arr[0][0])
-print(array[0][0].value)
+# array[0][0].parent = None
+# print(temp_arr[0][0])
+# print(array[0][0])
 
 queue = list()
-count = 1  # count visited node
-print(array[0][0])
+count = 0  # count visited node
 queue.append(array[0][0])
-# print(queue[0].x, queue[0].y)
-while queue:
+
+find = False
+if goal_x == 0 and goal_y == 0:
+    count = 1
+    find = True
+while queue and not find:
     temp = queue.pop(0)
-    print("visiting node at", temp.x, temp.y)
+    # print("visiting node at", temp.x, temp.y, "dis is: ", temp.dis)
+    # print("parent is : ")
+    # print(temp.parent)
+    count += 1
     adjacent = get_adjacent(temp)
-    print(len(adjacent))
+    adjacent = [node for node in adjacent if node.color == 'white']
+    # print("len of neighbours: ", len(adjacent))
+    # print("vidsited till now :{}\n".format(count))
     for node in adjacent:
-        if node.color == 'white' and node.value not in ['+', '*', '-', '|']:
-            node.color = 'gray'
-            node.dis = temp.dis + 1
-            node.parent = temp
-            queue.append(node)
+        # if node.color == 'white':
+        node.color = 'gray'
+        node.dis = temp.dis + 1
+        node.parent = temp
+        queue.append(node)
+        if node.x == goal_x and node.y == goal_y:
+            find = True
             count += 1
+            break
     temp.color = 'black'
 
-print("Done\n")
-print(count)
-print(array[goal_x][goal_y].dis)
+print("Done: Node Visited: {0}".format(count))
+print("Distance to goal is : {}".format(array[goal_x][goal_y].dis))
+
+
+# Tracing path
+path = list()
+for i in range(len(temp_arr)):
+    kk = [1]*len(temp_arr[0])
+    path.append(kk)
+# path = temp_arr[:]
+temp = array[goal_x][goal_y]
+# print(temp.value)
+while(temp is not None):
+    xx = temp.x
+    yy = temp.y
+    path[xx][yy] = 0
+    temp = temp.parent
+for i in range(len(temp_arr)):
+    for j in range(len(temp_arr[0])):
+        if path[i][j] == 1:
+            path[i][j] = temp_arr[i][j]
+        else:
+            path[i][j] = '0'
+
+with open("output.txt", "w") as ff:
+    for i in range(len(path)):
+        kk = "".join(path[i])
+        ff.write(kk)
+        ff.write("\n")
