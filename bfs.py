@@ -29,7 +29,7 @@ def get_adjacent(node):  # return neighbours of a node
 
 
 file = open("input.txt", "r")
-types = file.readline()    # types means bfs, dfs or dfid
+types = file.readline()[0]    # types means bfs, dfs or dfid
 # print(types)
 temp_arr = list()  # temporary list having input values
 for line in file:
