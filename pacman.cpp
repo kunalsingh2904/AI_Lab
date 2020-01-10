@@ -41,9 +41,10 @@ void traceprint(vector<string> str, vector <vector<graph>>  &g, cell goal,cell r
 
     tc = g[tc.x][tc.y].parent;   plen++;
   }   
-  str[tc.x][tc.y] = '0';
-  str[0][0]  = '0';  
-  str[root.x][root.y]  = '0'; plen = plen + 3;
+  str[tc.x][tc.y] = '0'; //ori root child
+  str[0][0]  = '0';  //ori root
+
+  plen = plen + 2;
   
   
   
@@ -68,7 +69,7 @@ for(int i=0;i<=str.size()-1;i++ )
 void movegen(stack <cell> &st, cell root, vector <vector<adj>> &adjan, vector <vector<graph>>  &g )
 {
 
-for(unsigned int k=0;k<=adjan[root.x][root.y].list.size()-1;k++  )
+for( int k=adjan[root.x][root.y].list.size()-1;k>=0;k--  )
    {
     if(g[adjan[root.x][root.y].list[k].x][adjan[root.x][root.y].list[k].y].color == 0)
     {
@@ -108,7 +109,7 @@ int  goaltest(cell obs,cell goal)
 
 
   while( !st.empty() )
-  {
+  {   cout<<"visiting  "<<st.top().x<<" "<<st.top().y<<"\n";
     if(goaltest(st.top(),goal) == 1)
     {
       
@@ -139,7 +140,7 @@ int  goaltest(cell obs,cell goal)
   {
 
   stack <cell> st;
-  st.push(root);
+  //st.push(root);
 
   if( dep > 0)
     {
@@ -154,6 +155,7 @@ int  goaltest(cell obs,cell goal)
 
   while( !st.empty() )
   {
+    cout<<"visiting  "<<st.top().x<<" "<<st.top().y<<" level : "<<g[st.top().x][st.top().y].level<<"\n";
     if(goaltest(st.top(),goal) == 1 )
     {
       
@@ -177,6 +179,7 @@ int  goaltest(cell obs,cell goal)
     }
     
   }
+  cout<<"                stack empty for depth  "<<dep<<"\n";
   return -1;
 
   }
@@ -263,86 +266,26 @@ vector <vector<adj>> adjan(n,vector<adj>(m));
 //hidden code
   cell root; cell goal;
   cell cc;
+  root.x = 0;root.y=0;
+  str[0][0] = ' ';
 
-
-  for(int i=1;i<=n-1;i++ )
-  {
-  if(str[i][0]==' ')
-    {
-      cell cc;
-      cc.x = i; cc.y = 1;
-      adjan[i][0].list.push_back(cc);
-      root.x = i; root.y = 0;
-    }
-
-  if(str[i][0]=='*')
-      {
-      goal.x = i; goal.y = 0;     
-      }
-
-  }
-
-  for(int i=1;i<=n-1;i++ )
-  {
-    if(str[i][m-1]==' ')
-      {
-        cell cc;
-        cc.x = i; cc.y = m-2;
-        adjan[i][m-1].list.push_back(cc);
-        root.x = i; root.y = m-2;
-      }
-      if(str[i][m-1]=='*')
-          {
-
-          goal.x = i; goal.y = m-1;     
-          }
-
-  }
-  for(int j=1;j<=m-1;j++ )
-  {
-    if(str[0][j]==' ')
-      {
-        cell cc;
-        cc.x = 1; cc.y = j;
-        adjan[0][j].list.push_back(cc);
-        root.x = 0; root.y = j;
-      }
-      if(str[0][j]=='*')
-          {
-
-          goal.x = 0; goal.y = j;     
-          }
-  }
-  for(int j=1;j<=m-1;j++ )
-  {
-    if(str[n-1][j]==' ')
-      {
-        cell cc;
-        cc.x = n-2; cc.y = j;
-        adjan[n-1][j].list.push_back(cc);
-        root.x = n-1; root.y = j;
-      }
-      if(str[n-1][j]=='*')
-          {
-
-          goal.x = n-1; goal.y = j;     
-          }
-
-  }
 
 
 
 
 //hidden code;adj,goal etc;
-  for(int i=1;i<=n-1-1;i++ )
+  for(int i=0;i<=n-1;i++ )
   {
-    for(int j=1;j<=m-1-1;j++ )
+    for(int j=0;j<=m-1;j++ )
 
       {
-        if(str[i][j] == ' ')
+        if(str[i][j] == ' ' || str[i][j] == '*')
         {
+              if(str[i][j] == '*'){
+                goal.x = i; goal.y = j;
+              }
 
-               if(  str[i+1][j] ==' ' ) // UP
+               if(  i+1 <= n-1 && ( str[i+1][j] ==' ' || str[i+1][j] =='*') ) // UP
                {
 
                 cell ct;
@@ -355,7 +298,7 @@ vector <vector<adj>> adjan(n,vector<adj>(m));
               }
 
 
-               if(  str[i-1][j] ==' ' ) // DOWN
+               if(  i-1>=0 && ( str[i-1][j] ==' ' ||str[i-1][j] =='*' )) // DOWN
                {
 
                 cell ct;
@@ -369,7 +312,7 @@ vector <vector<adj>> adjan(n,vector<adj>(m));
 
 
 
-              if(  str[i][j+1] ==' ' ) // RIGHT
+              if( j+1 <= m-1 && (str[i][j+1] ==' ' || str[i][j+1] =='*') ) // RIGHT
               {
 
                 cell ct;
@@ -381,7 +324,7 @@ vector <vector<adj>> adjan(n,vector<adj>(m));
 
               }
 
-              if(  str[i][j-1] ==' ' ) // LEFT
+              if( j-1 >=0 && (str[i][j-1] ==' ' || str[i][j-1] =='*' )) // LEFT
               {
 
                 cell ct;
@@ -405,45 +348,7 @@ vector <vector<adj>> adjan(n,vector<adj>(m));
       }
 
   }
-  {//goal 
-    if(str[goal.x][goal.y-1] == ' ')
-    {
-      cell ct;
-      ct.x = goal.x;
-      ct.y = goal.y;
-
-      adjan[goal.x][goal.y-1].list.push_back(ct);
-
-    }
-        if(str[goal.x-1][goal.y] == ' ')
-    {
-      cell ct;
-      ct.x = goal.x;
-      ct.y = goal.y;
-
-      adjan[goal.x-1][goal.y].list.push_back(ct);
-
-    }
-        if(str[goal.x][goal.y+1] == ' ')
-    {
-      cell ct;
-      ct.x = goal.x;
-      ct.y = goal.y;
-
-      adjan[goal.x][goal.y+1].list.push_back(ct);
-
-    }
-        if(str[goal.x+1][goal.y] == ' ')
-    {
-      cell ct;
-      ct.x = goal.x;
-      ct.y = goal.y;
-
-      adjan[goal.x+1][goal.y].list.push_back(ct);
-
-    }
-
-  }
+  
 
 
 vector <vector<graph>> g(n,vector<graph>(m)); // graph fixed index
@@ -455,8 +360,8 @@ dispadj(adjan,n,m);
 
 
 
-//cout<<"root "<<root.x<<" "<<root.y<<"\n";
-//cout<<"goal "<<goal.x<<" "<<goal.y<<"\n";
+cout<<"root "<<root.x<<" "<<root.y<<"\n";
+cout<<"goal "<<goal.x<<" "<<goal.y<<"\n";
 
 
 if(typ == 1)
