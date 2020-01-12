@@ -4,7 +4,6 @@ import sys
 class Node:
     def __init__(self):
         self.value = ''
-        self.color = 'white'
         self.dis = -1
         self.parent = None
         self.x = -1
@@ -17,7 +16,6 @@ class Node:
 def get_adjacent(node):  # return neighbours of a node
     xx = node.x
     yy = node.y
-    # print(xx, yy)
     adjacent = []
     kk = ['+', '-', '|']
     if xx+1 < row and array[xx+1][yy].value not in kk:
@@ -28,36 +26,30 @@ def get_adjacent(node):  # return neighbours of a node
         adjacent.append(array[xx][yy+1])
     if yy-1 >= 0 and array[xx][yy-1].value not in kk:
         adjacent.append(array[xx][yy-1])
-    # adjacent = adjacent[::-1]
     return adjacent
 
 
 def dfs_visit(node):
     global finds
-    tt.write(str(node.x)+" " + str(node.y) + "\n")
-    node.color = 'gray'
-
-    adjacent = get_adjacent(node)
-    adjacent = [temp for temp in adjacent if temp.color == 'white']
-
-    for temp in adjacent:
-        temp.color = 'gray'
-        tt.write(str(temp.x)+" " + str(temp.y) + "\n")
-
+    goal.dis += 1
     if node.x == goal_x and node.y == goal_y:
-        node.color = 'black'
         finds = True
         return
-    if node.dis == depth:
-        node.color = 'black'
+
+    if node.dis - 1 == depth:
         return
+    adjacent = get_adjacent(node)
     for temp in adjacent:
         if finds:
             break
-        temp.parent = node
-        temp.dis = node.dis+1
-        dfs_visit(temp)
-    node.color = 'black'
+        if temp.dis is -1:
+            temp.parent = node
+            temp.dis = node.dis+1
+            dfs_visit(temp)
+        elif temp.dis > node.dis + 1:
+            temp.parent = node
+            temp.dis = node.dis+1
+            dfs_visit(temp)
 
 
 file = open(sys.argv[1], "r")
@@ -68,7 +60,7 @@ for line in file:
     line = line[0:(len(line)-1)]
     temp_arr.append(line)
 file.close()
-array = list()  # list storing all values with node
+array = list()
 for i in range(len(temp_arr)):
     kk = []
     for j in range(len(temp_arr[0])):
@@ -90,30 +82,27 @@ for i in range(len(temp_arr)):
 
 row = len(array)
 col = len(array[0])
-tt = open("kkk.txt", "w")
-
-
 finds = False
 depth = 0
-count_visited = 0
+
+
+goal = Node()
+goal.dis = 0
+
+if array[0][0].x == goal_x and array[0][0].y == goal_y:
+    goal.dis = 1
+    finds = True
 
 while not finds:
     depth += 1
     for i in range(len(temp_arr)):
         for j in range(len(temp_arr[0])):
-            array[i][j].color = 'white'
+            array[i][j].dis = -1
 
     array[0][0].dis = 1
-    dfs_visit(array[0][0])
-    cc = 0
-    for i in range(len(array)):
-        for j in range(len(array[0])):
-            if array[i][j].color == 'black' or array[i][j].color == 'gray':
-                tt.write(str(array[i][j].x) + " "+str(array[i][j].y)+"\n")
-                cc += 1
-    tt.write("At depth {0} count is: {1}\n".format(depth, cc))
-    count_visited += cc
 
+    dfs_visit(array[0][0])
+    # print("depth: {0} and visit: {1}\n".format(depth, goal.dis))
 
 path = list()
 for i in range(len(temp_arr)):
@@ -135,7 +124,7 @@ for i in range(len(temp_arr)):
             path[i][j] = '0'
 
 with open("output.txt", "w") as ff:
-    ff.write(str(count_visited))
+    ff.write(str(goal.dis))
     ff.write("\n")
     ff.write(str(array[goal_x][goal_y].dis))
     ff.write("\n")
@@ -143,6 +132,3 @@ with open("output.txt", "w") as ff:
         kk = "".join(path[i])
         ff.write(kk)
         ff.write("\n")
-
-
-tt.close()
