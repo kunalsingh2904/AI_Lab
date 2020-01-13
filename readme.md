@@ -1,1 +1,0 @@
-# Assignment of AI Lab
