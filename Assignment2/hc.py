@@ -134,9 +134,6 @@ close = list()
 store = list()
 opens.append(array[0][0])
 while not finds:
-    if len(opens) == 0:
-        print("\nproblem. can't find path.\n")
-        break
     for node in opens:
         store.append(node)
     kk = opens.pop(0)  # taking best from opens list
@@ -168,6 +165,9 @@ while not finds:
     for i in range(len(temp_arr)):
         for j in range(len(temp_arr[0])):
             array[i][j].dis = -1
+    if len(opens) == 0 or kk.d < opens[0].d:
+        print("\nproblem. can't find path.\n")
+        break
 
 
 print("\nTotal node explored: {0}".format(len(opens)+len(close)))
