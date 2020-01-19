@@ -145,11 +145,11 @@ while not finds:
     kk = opens.pop(0)  # taking best from opens list
     print(kk)  # printing node visiting
     close.append(kk)
-    store.append(kk)
     if kk.value == 3:
         finds = True
         time += 1
         break
+    temporary = list()
     queue = list()
     kk.dis = 1
     queue.append(kk)
@@ -163,12 +163,16 @@ while not finds:
             node.dis = temp.dis + 1   # updating distance
             node.parent = temp        # assigning parent
             if node.value == 0 or node.value == 3:
-                opens.append(node)
+                temporary.append(node)
             else:
                 queue.append(node)
-    opens = [node for node in opens if node not in store]
+    temporary = [node for node in temporary if node not in store]
+    temporary.sort(key=lambda x: x.d)
+    temporary = temporary[:beta]
+    for i in temporary:
+        opens.append(i)
     opens.sort(key=lambda x: x.d)  # sorting opens based on distance
-    opens = opens[:beta]
+
     for i in range(len(temp_arr)):
         for j in range(len(temp_arr[0])):
             array[i][j].dis = -1
