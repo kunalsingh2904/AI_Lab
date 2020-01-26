@@ -1,3 +1,4 @@
+# run as "python3 bfs.py <h_fun_id--1/2> file.txt"
 import sys
 
 
@@ -30,7 +31,7 @@ def MoveGen(node):  # return neighbours of a node
     return adjacent
 
 
-file = open("input.txt", "r")    # opening input file
+file = open(sys.argv[2], "r")    # opensing input file
 
 temp_arr = list()  # temporary list having input values
 for line in file:
@@ -76,10 +77,6 @@ for i in range(len(temp_arr)):  # assigning location and value to each node
 row = len(array)   # dimension of array
 col = len(array[0])
 
-# print(len(friends))
-# print(len(enemy))
-# print(goal_x, goal_y)
-
 
 for node in enemy:    # ball can't be pass by enemy neighbours
     xx = node.x
@@ -101,7 +98,7 @@ for node in enemy:    # ball can't be pass by enemy neighbours
     if xx+1 < row and yy+1 < col:
         array[xx+1][yy+1].value = 1
 
-# removing unuseful friends
+# removing un-useful friends
 friends = [node for node in friends if node.value == 0 or node.value == 3]
 
 # defining Heuristic function
@@ -115,7 +112,7 @@ if sys.argv[1] == '1':
 elif sys.argv[1] == '2':
     # second Heuristic function based on path length
     queue2 = list()
-    array[goal_x][goal_y].d = 1
+    array[goal_x][goal_y].d = 0
     queue2.append(array[goal_x][goal_y])
     while queue2:
         temp = queue2.pop(0)
@@ -127,20 +124,20 @@ elif sys.argv[1] == '2':
             queue2.append(node)
 
 
-finds = False
-time = 0
-open = list()
-close = list()
-open.append(array[0][0])
+finds = False   # target found or not
+time = 0     # count steps
+opens = list()   # open list
+close = list()   # closed list
+opens.append(array[0][0])
 while not finds:
-    kk = open.pop(0)  # taking best from open list
+    kk = opens.pop(0)  # taking best from opens list
     print(kk)  # printing node visiting
-    close.append(kk)
-    if kk.value == 3:
+    close.append(kk)   # putting in closed
+    if kk.value == 3:  # checking goal
         finds = True
         time += 1
         break
-    queue = list()
+    queue = list()     # finding childs
     kk.dis = 1
     queue.append(kk)
     while queue:
@@ -153,15 +150,15 @@ while not finds:
             node.dis = temp.dis + 1   # updating distance
             node.parent = temp        # assigning parent
             if node.value == 0 or node.value == 3:
-                open.append(node)
+                opens.append(node)
             else:
                 queue.append(node)
-    open = [node for node in open if node not in close]
-    open.sort(key=lambda x: x.d)  # sorting open based on distance
+    opens = [node for node in opens if node not in close]
+    opens.sort(key=lambda x: x.d)  # sorting opens based on distance
     for i in range(len(temp_arr)):
         for j in range(len(temp_arr[0])):
-            array[i][j].dis = -1
+            array[i][j].dis = -1   # reinitialising distance
 
-
-print("\nTotal node explored: {0}".format(len(open)+len(close)))
+ # required output
+print("\nTotal node explored: {0}".format(len(opens)+len(close)))
 print("Total time taken in term of steps: {0} ".format(time))

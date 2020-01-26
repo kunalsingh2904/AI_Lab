@@ -1,3 +1,4 @@
+# run as "python3 bean.py <h_fun_1/2> <bean_width> input.txt"
 import sys
 
 
@@ -30,7 +31,7 @@ def MoveGen(node):  # return neighbours of a node
     return adjacent
 
 
-file = open("input.txt", "r")    # opensing input file
+file = open(sys.argv[3], "r")    # opensing input file
 
 temp_arr = list()  # temporary list having input values
 for line in file:
@@ -76,10 +77,6 @@ for i in range(len(temp_arr)):  # assigning location and value to each node
 row = len(array)   # dimension of array
 col = len(array[0])
 
-# print(len(friends))
-# print(len(enemy))
-# print(goal_x, goal_y)
-
 
 for node in enemy:    # ball can't be pass by enemy neighbours
     xx = node.x
@@ -101,7 +98,7 @@ for node in enemy:    # ball can't be pass by enemy neighbours
     if xx+1 < row and yy+1 < col:
         array[xx+1][yy+1].value = 1
 
-# removing unuseful friends
+# removing un-useful friends
 friends = [node for node in friends if node.value == 0 or node.value == 3]
 
 # defining Heuristic function
@@ -115,7 +112,7 @@ if sys.argv[1] == '1':
 elif sys.argv[1] == '2':
     # second Heuristic function based on path length
     queue2 = list()
-    array[goal_x][goal_y].d = 1
+    array[goal_x][goal_y].d = 0
     queue2.append(array[goal_x][goal_y])
     while queue2:
         temp = queue2.pop(0)
@@ -131,52 +128,56 @@ beta = int(sys.argv[2])
 
 finds = False
 time = 0
-opens = list()
-close = list()
-store = list()
+opens = list()    # open list
+close = list()    # closed list
+store = list()   # temprory list store all nodes
+store.append(array[0][0])
 opens.append(array[0][0])
+
 while not finds:
     if len(opens) == 0:
         print("\nproblem. can't find path.\n")
         break
-    for node in opens:
-        store.append(node)
     # print(len(opens))
-    kk = opens.pop(0)  # taking best from opens list
-    print(kk)  # printing node visiting
-    close.append(kk)
-    if kk.value == 3:
-        finds = True
-        time += 1
-        break
-    temporary = list()
-    queue = list()
-    kk.dis = 1
-    queue.append(kk)
-    while queue:
-        temp = queue.pop(0)
-        time += 1
-        adjacent = MoveGen(temp)   # getting neighbours
-        # removing already visited node
-        adjacent = [node for node in adjacent if node.dis == -1]
-        for node in adjacent:
-            node.dis = temp.dis + 1   # updating distance
-            node.parent = temp        # assigning parent
-            if node.value == 0 or node.value == 3:
-                temporary.append(node)
-            else:
-                queue.append(node)
-    temporary = [node for node in temporary if node not in store]
+    temporary = list()   # temprory list store all child at a level
+    round = min(beta, len(opens))  # choosing range allowed
+    for i in range(round):  # using all beta nodes if possible
+        kk = opens.pop(0)  # taking best from opens list
+        print(kk)  # printing node visiting
+        close.append(kk)
+        if kk.value == 3:   # checking for goal
+            finds = True
+            time += 1
+            break
+
+        queue = list()
+        kk.dis = 1
+        queue.append(kk)
+        while queue:   # searching for child
+            temp = queue.pop(0)
+            time += 1
+            adjacent = MoveGen(temp)   # getting neighbours
+            # removing already visited node
+            adjacent = [node for node in adjacent if node.dis == -1]
+            for node in adjacent:
+                node.dis = temp.dis + 1   # updating distance
+                node.parent = temp        # assigning parent
+                if node.value == 0 or node.value == 3:
+                    temporary.append(node)  # child
+                else:
+                    queue.append(node)
+        temporary = [node for node in temporary if node not in store]
+        for i in range(len(temp_arr)):
+            for j in range(len(temp_arr[0])):
+                array[i][j].dis = -1     # reinitializing distance
     temporary.sort(key=lambda x: x.d)
+    for i in temporary:
+        store.append(i)
     temporary = temporary[:beta]
     for i in temporary:
         opens.append(i)
     opens.sort(key=lambda x: x.d)  # sorting opens based on distance
 
-    for i in range(len(temp_arr)):
-        for j in range(len(temp_arr[0])):
-            array[i][j].dis = -1
 
-
-print("\nTotal node explored: {0}".format(len(opens)+len(close)))
+print("\nTotal node explored: {0}".format(len(store)))
 print("Total time taken in term of steps: {0} ".format(time))

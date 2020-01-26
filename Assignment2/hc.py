@@ -1,3 +1,4 @@
+# run as "python3 hc.py <h_fun_id--1/2> file.txt"
 import sys
 
 
@@ -30,7 +31,7 @@ def MoveGen(node):  # return neighbours of a node
     return adjacent
 
 
-file = open("input.txt", "r")    # opensing input file
+file = open(sys.argv[2], "r")    # opensing input file
 
 temp_arr = list()  # temporary list having input values
 for line in file:
@@ -38,16 +39,13 @@ for line in file:
     temp_arr.append(line)
 file.close()
 
-array = list()  # list storing all values with node
+# list storing all values with node
+# creating node and putting in array
+array = [[Node() for j in range(len(temp_arr[0]))]
+         for i in range(len(temp_arr))]
+
 friends = list()   # list having same team player
 enemy = list()  # list having enemy team player
-
-for i in range(len(temp_arr)):  # creating node and putting in array
-    kk = []
-    for j in range(len(temp_arr[0])):
-        temp = Node()
-        kk.append(temp)
-    array.append(kk)
 
 goal_x = -1   # coordinate of goal state
 goal_y = -1
@@ -115,7 +113,7 @@ if sys.argv[1] == '1':
 elif sys.argv[1] == '2':
     # second Heuristic function based on path length
     queue2 = list()
-    array[goal_x][goal_y].d = 1
+    array[goal_x][goal_y].d = 0
     queue2.append(array[goal_x][goal_y])
     while queue2:
         temp = queue2.pop(0)
@@ -140,7 +138,7 @@ while not finds:
     print(kk)  # printing node visiting
     close.append(kk)
     opens.clear()
-    if kk.value == 3:
+    if kk.value == 3:    # goal test
         finds = True
         time += 1
         break
@@ -157,18 +155,18 @@ while not finds:
             node.dis = temp.dis + 1   # updating distance
             node.parent = temp        # assigning parent
             if node.value == 0 or node.value == 3:
-                opens.append(node)
+                opens.append(node)   # child
             else:
                 queue.append(node)
     opens = [node for node in opens if node not in store]
     opens.sort(key=lambda x: x.d)  # sorting opens based on distance
     for i in range(len(temp_arr)):
-        for j in range(len(temp_arr[0])):
+        for j in range(len(temp_arr[0])):  # reinitializing distance
             array[i][j].dis = -1
     if len(opens) == 0 or kk.d < opens[0].d:
         print("\nproblem. can't find path.\n")
         break
 
-
-print("\nTotal node explored: {0}".format(len(opens)+len(close)))
+# required output
+print("\nTotal node explored: {0}".format(len(store)))
 print("Total time taken in term of steps: {0} ".format(time))

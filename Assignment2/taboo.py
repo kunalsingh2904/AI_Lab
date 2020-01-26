@@ -2,6 +2,7 @@ import sys
 
 bestdis = 0
 
+
 class Node:   # creating node
     def __init__(self):
         self.value = 2   # values can be +,0,* or blank; modified--->0 for friend, 1 for enemy, 2 for blank, 3 for goal
@@ -10,12 +11,10 @@ class Node:   # creating node
         self.x = -1    # coordinate of node
         self.y = -1
         self.parent = None
-        
 
     def __str__(self):   # printing
         return str(self.x) + " " + str(self.y) + " distance: " + str(self.d)
- 
-   
+
  # 0 for friend, 1 for enemy, 2 for blank, 3 for goal
 
 
@@ -33,19 +32,18 @@ def MoveGen(node):  # return neighbours of a node
         adjacent.append(array[xx][yy-1])
     return adjacent
 
+
 def allowed(adjacent):
     temp = []
-    for i in range(0,len(adjacent)): 
-        if(adjacent[i].d >= bestdis):  #if neighbours have dist less than best distance
+    for i in range(0, len(adjacent)):
+        if(adjacent[i].d >= bestdis):  # if neighbours have dist less than best distance
             temp.append(adjacent[i])
-    if(len(temp) == 0):
-        temp = [node for node in temp if node not in close]  # checking in circular queue close with length tt
 
     if(len(temp) == 0):
-        temp.append(    min(adjacent,key=lambda x: x.d) ) # Aspiration Criteria
-
+        temp.append(min(adjacent, key=lambda x: x.d))  # Aspiration Criteria
 
     return temp
+
 
 def best(adj):
     adj.sort(key=lambda x: x.d)
@@ -155,10 +153,11 @@ open = list()
 close = list()
 open.append(array[0][0])
 while not finds:
-    kk = open.pop(0)  # taking best from open list
-    print(kk)  # printing node visiting
-   
-    if(len(close)<=tt):   # implementin circular que for close with length tt
+    if len(open) > 0:
+        kk = open.pop(0)  # taking best from open list
+        print(kk)  # printing node visiting
+
+    if(len(close) < tt):   # implementin circular que for close with length tt
         close.append(kk)
     else:
         close.pop(0)
@@ -186,7 +185,8 @@ while not finds:
                 queue.append(node)
     # open = [node for node in open if node not in close]
     # open.sort(key=lambda x: x.d)  # sorting open based on distance
-    bestdis = open[0].d
+    if len(open) > 0:
+        bestdis = open[0].d
     for i in range(len(temp_arr)):
         for j in range(len(temp_arr[0])):
             array[i][j].dis = -1
