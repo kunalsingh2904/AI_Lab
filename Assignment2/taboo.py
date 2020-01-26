@@ -54,7 +54,7 @@ def best(adj):
     return adj
 
 
-file = open("input.txt", "r")    # opening input file
+file = open(sys.argv[3], "r")    # opening input file
 
 temp_arr = list()  # temporary list having input values
 for line in file:
