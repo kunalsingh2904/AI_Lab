@@ -58,7 +58,7 @@ def VND(node):
         # print("||||||||||||",len(adj)," ",adj[0].x," ",adj[0].y)
     return adj
 
-file = open("input.txt", "r")    # opensing input file
+file = open(sys.argv[2], "r")    # opensing input file
 
 temp_arr = list()  # temporary list having input values
 for line in file:
