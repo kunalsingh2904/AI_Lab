@@ -36,7 +36,7 @@ def best(adja,parent):
             adj.append(i)
     adj.sort(key=lambda x: x.d)
     # for i in adj:
-        # print("ZZZZZZ",i.x," ",i.y," ",i.d ," ",parent.d)
+    #     print("ZZZZZZ",i.x," ",i.y," ",i.d ," ",parent.d)
     temp = []
     if(len(adj) != 0):
         if(adj[0].d <= parent.d or adj[0].d == 0 ):
@@ -136,11 +136,12 @@ friends = [node for node in friends if node.value == 0 or node.value == 3]
 # defining Heuristic function
 if sys.argv[1] == '1':
     # First Heuristic function based on euclidian distance
-    for node in friends:
-        xx = node.x
-        yy = node.y
-        euclidean_distance = ((goal_x-xx)**2 + (goal_y-yy)**2)**(0.5)
-        node.d = euclidean_distance
+    for li in array:    
+        for node in li:
+            xx = node.x
+            yy = node.y
+            euclidean_distance = ((goal_x-xx)**2 + (goal_y-yy)**2)**(0.5)
+            node.d = euclidean_distance
 elif sys.argv[1] == '2':
     # second Heuristic function based on path length
     queue2 = list()
