@@ -56,12 +56,12 @@ goal_y = -1
 for i in range(len(temp_arr)):  # assigning location and value to each node
     for j in range(len(temp_arr[0])):
         temp = array[i][j]
-        temp.x = i
+        temp.x = i      # assigning coordinates
         temp.y = j
         if temp_arr[i][j] == '*':   # finding location of target node
             goal_x = i
             goal_y = j
-            temp.value = 3
+            temp.value = 3  # marking as goal state
             temp.d = 0
             friends.append(temp)
         elif temp_arr[i][j] == '0':  # finding friends
@@ -108,7 +108,8 @@ if sys.argv[1] == '1':
     for node in friends:
         xx = node.x
         yy = node.y
-        euclidean_distance = ((goal_x-xx)**2 + (goal_y-yy)**2)**(0.5)
+        euclidean_distance = ((goal_x-xx)**2 + (goal_y-yy)
+                              ** 2)**(0.5)       # euclidean formula
         node.d = euclidean_distance
 elif sys.argv[1] == '2':
     # second Heuristic function based on path length
@@ -127,8 +128,8 @@ elif sys.argv[1] == '2':
 beta = int(sys.argv[2])
 
 
-finds = False
-time = 0
+finds = False       # goal found or not
+time = 0        # count time in term of steps
 opens = list()    # open list
 close = list()    # closed list
 store = list()   # temprory list store all nodes
@@ -136,7 +137,7 @@ store.append(array[0][0])
 opens.append(array[0][0])
 
 while not finds:
-    if len(opens) == 0:
+    if len(opens) == 0:     # open is empty ,solution can't found
         print("\nproblem. can't find path.\n")
         break
     # print(len(opens))
@@ -147,11 +148,11 @@ while not finds:
         print(kk)  # printing node visiting
         close.append(kk)
         if kk.value == 3:   # checking for goal
-            finds = True
+            finds = True        # goal found
             time += 1
             break
 
-        queue = list()
+        queue = list()      # queue for bfs
         kk.dis = 1
         queue.append(kk)
         while queue:   # searching for child
@@ -170,15 +171,18 @@ while not finds:
         for i in range(len(temp_arr)):
             for j in range(len(temp_arr[0])):
                 array[i][j].dis = -1     # reinitializing distance
+
+    # Removing node alredy seen
     temporary = [node for node in temporary if node not in store]
-    temporary = list(set(temporary))
+    temporary = list(set(temporary))   # removing duplicates
+    # ordering based on heuristic function
     temporary.sort(key=lambda x: x.d)
     for i in temporary:
-        store.append(i)
+        store.append(i)         # putting in seen node
     opens.clear()
-    temporary = temporary[:beta]
+    temporary = temporary[:beta]        # taking best beta node at each level
     for i in temporary:
-        opens.append(i)
+        opens.append(i)  # putting in open
     opens.sort(key=lambda x: x.d)  # sorting opens based on distance
 
 

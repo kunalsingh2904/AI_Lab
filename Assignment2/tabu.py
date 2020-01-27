@@ -108,14 +108,15 @@ if sys.argv[1] == '1':
     for node in friends:
         xx = node.x
         yy = node.y
-        euclidean_distance = ((goal_x-xx)**2 + (goal_y-yy)**2)**(0.5)
+        euclidean_distance = ((goal_x-xx)**2 + (goal_y-yy)
+                              ** 2)**(0.5)       # euclidean formula
         node.d = euclidean_distance
 elif sys.argv[1] == '2':
     # second Heuristic function based on path length
     queue2 = list()
     array[goal_x][goal_y].d = 0
     queue2.append(array[goal_x][goal_y])
-    while queue2:
+    while queue2:           # finding child using bfs
         temp = queue2.pop(0)
         adjacent = MoveGen(temp)   # getting neighbours
         # removing already visited node
@@ -134,29 +135,29 @@ opens = list()    # open list
 opens.append(array[0][0])
 
 while not finds:
-    if len(opens) == 0:
+    if len(opens) == 0:     # open become empty , No solution
         print("\nproblem. can't find path.\n")
         break
-    tt = False
+    tt = False      # node seen in last k best node
     for i in range(len(opens)):
-        kk = opens.pop(0)
+        kk = opens.pop(0)       # choosing the node not seen in last k node
         if kk not in tabu_list:
             tt = True
             break
-    if tt is False:
+    if tt is False:  # no slution as no unseen node found
         print("Problem2. can't find path.")
         break
     # taking best from opens list
     print(kk)  # printing node visiting
-    count_explored += 1
+    count_explored += 1                 # updating explored node count
     if len(tabu_list) >= tabu:   # checking size and inserting
-        temp_store = tabu_list.pop(0)
+        temp_store = tabu_list.pop(0)           # cyclic way
     tabu_list.append(kk)
     if kk.value == 3:     # goal test
-        finds = True
+        finds = True        # goal found
         time += 1
         break
-    queue = list()
+    queue = list()          # queue for bfs
     kk.dis = 1
     queue.append(kk)      # searching childs
     while queue:

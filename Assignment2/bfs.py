@@ -56,7 +56,7 @@ goal_y = -1
 for i in range(len(temp_arr)):  # assigning location and value to each node
     for j in range(len(temp_arr[0])):
         temp = array[i][j]
-        temp.x = i
+        temp.x = i      # assigning coordinates
         temp.y = j
         if temp_arr[i][j] == '*':   # finding location of target node
             goal_x = i
@@ -107,7 +107,8 @@ if sys.argv[1] == '1':
     for node in friends:
         xx = node.x
         yy = node.y
-        euclidean_distance = ((goal_x-xx)**2 + (goal_y-yy)**2)**(0.5)
+        euclidean_distance = ((goal_x-xx)**2 + (goal_y-yy)
+                              ** 2)**(0.5)  # eucledian formula
         node.d = euclidean_distance
 elif sys.argv[1] == '2':
     # second Heuristic function based on path length
@@ -160,7 +161,7 @@ while not finds:
             array[i][j].dis = -1   # reinitialising distance
     if len(opens) == 0:
         print("No solution exits")
-        break
+        break  # open becomes empty, No solution
 
 # required output
 print("\nTotal node explored: {0}".format(len(opens)+len(close)))

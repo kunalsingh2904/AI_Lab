@@ -53,12 +53,12 @@ goal_y = -1
 for i in range(len(temp_arr)):  # assigning location and value to each node
     for j in range(len(temp_arr[0])):
         temp = array[i][j]
-        temp.x = i
+        temp.x = i      # assigning coordinates
         temp.y = j
         if temp_arr[i][j] == '*':   # finding location of target node
             goal_x = i
             goal_y = j
-            temp.value = 3
+            temp.value = 3      # marking as goal node
             temp.d = 0
             friends.append(temp)
         elif temp_arr[i][j] == '0':  # finding friends
@@ -73,10 +73,6 @@ for i in range(len(temp_arr)):  # assigning location and value to each node
 
 row = len(array)   # dimension of array
 col = len(array[0])
-
-# print(len(friends))
-# print(len(enemy))
-# print(goal_x, goal_y)
 
 
 for node in enemy:    # ball can't be pass by enemy neighbours
@@ -100,7 +96,7 @@ for node in enemy:    # ball can't be pass by enemy neighbours
         array[xx+1][yy+1].value = 1
 
 
-# removing unuseful friends
+# removing un-useful friends
 friends = [node for node in friends if node.value == 0 or node.value == 3]
 
 # defining Heuristic function
@@ -109,7 +105,8 @@ if sys.argv[1] == '1':
     for node in friends:
         xx = node.x
         yy = node.y
-        euclidean_distance = ((goal_x-xx)**2 + (goal_y-yy)**2)**(0.5)
+        euclidean_distance = ((goal_x-xx)**2 + (goal_y-yy)
+                              ** 2)**(0.5)  # euclidean formula
         node.d = euclidean_distance
 elif sys.argv[1] == '2':
     # second Heuristic function based on path length
@@ -126,29 +123,29 @@ elif sys.argv[1] == '2':
             queue2.append(node)
 
 
-finds = False
-time = 0
-opens = list()
-close = list()
-store = list()
+finds = False       # found target or not
+time = 0            # count no. of steps
+opens = list()      # open list
+close = list()      # close list
+store = list()      # temprory list to store all node
 opens.append(array[0][0])
 while not finds:
-    for node in opens:
+    for node in opens:      # storing in store to avoid repeatation
         store.append(node)
     kk = opens.pop(0)  # taking best from opens list
     print(kk)  # printing node visiting
     close.append(kk)
     opens.clear()
     if kk.value == 3:    # goal test
-        finds = True
+        finds = True        # found target
         time += 1
         break
     queue = list()
     kk.dis = 1
     queue.append(kk)
-    while queue:
+    while queue:            # bfs to find child
         temp = queue.pop(0)
-        time += 1
+        time += 1       # updating counts
         adjacent = MoveGen(temp)   # getting neighbours
         # removing already visited node
         adjacent = [node for node in adjacent if node.dis == -1]
@@ -159,11 +156,14 @@ while not finds:
                 opens.append(node)   # child
             else:
                 queue.append(node)
+
+    # removing already visited node
     opens = [node for node in opens if node not in store]
     opens.sort(key=lambda x: x.d)  # sorting opens based on distance
     for i in range(len(temp_arr)):
         for j in range(len(temp_arr[0])):  # reinitializing distance
             array[i][j].dis = -1
+    # child must be better than parent node
     if len(opens) == 0 or kk.d < opens[0].d:
         print("\nproblem. can't find path.\n")
         break
