@@ -131,10 +131,12 @@ opens = list()
 close = list()
 store = list()
 opens.append(array[0][0])
+nexp = 0
 while not finds:
     # for node in opens:  #all nodes discarded includeing the best one
     #     store.append(node)
     kk = opens.pop(0)  # taking best from opens list
+    nexp += 1
     print(kk)  # printing node visiting
     close.append(kk)
     # opens.clear()
@@ -171,5 +173,5 @@ while not finds:
         opens.pop(0)                       #and the next neighbor is considered for expansion
 
 # required output
-print("\nTotal node explored: {0}".format(len(store)))
+print("\nTotal node explored: {0}".format(nexp))
 print("Total time taken in term of steps: {0} ".format(time))
