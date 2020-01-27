@@ -167,13 +167,15 @@ while not finds:
                     temporary.append(node)  # child
                 else:
                     queue.append(node)
-        temporary = [node for node in temporary if node not in store]
         for i in range(len(temp_arr)):
             for j in range(len(temp_arr[0])):
                 array[i][j].dis = -1     # reinitializing distance
+    temporary = [node for node in temporary if node not in store]
+    temporary = list(set(temporary))
     temporary.sort(key=lambda x: x.d)
     for i in temporary:
         store.append(i)
+    opens.clear()
     temporary = temporary[:beta]
     for i in temporary:
         opens.append(i)
