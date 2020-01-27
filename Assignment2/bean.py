@@ -81,22 +81,23 @@ col = len(array[0])
 for node in enemy:    # ball can't be pass by enemy neighbours
     xx = node.x
     yy = node.y
-    if xx+1 < row:
+    if xx+1 < row:                      # down
         array[xx+1][yy].value = 1
-    if xx-1 >= 0:
+    if xx-1 >= 0:                       # up
         array[xx-1][yy].value = 1
-    if yy+1 < col:
+    if yy+1 < col:                          # right
         array[xx][yy+1].value = 1
-    if yy-1 >= 0:
+    if yy-1 >= 0:                       # left
         array[xx][yy-1].value = 1
-    if xx-1 >= 0 and yy-1 >= 0:
+    if xx-1 >= 0 and yy-1 >= 0:             # up left diigonal
         array[xx-1][yy-1].value = 1
-    if xx-1 >= 0 and yy+1 < col:
+    if xx-1 >= 0 and yy+1 < col:            # up right diigonal
         array[xx-1][yy+1].value = 1
-    if xx+1 < row and yy-1 >= 0:
+    if xx+1 < row and yy-1 >= 0:            # down left diigonal
         array[xx+1][yy-1].value = 1
-    if xx+1 < row and yy+1 < col:
+    if xx+1 < row and yy+1 < col:           # down right diigonal
         array[xx+1][yy+1].value = 1
+
 
 # removing un-useful friends
 friends = [node for node in friends if node.value == 0 or node.value == 3]
