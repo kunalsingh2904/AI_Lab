@@ -1,3 +1,4 @@
+# run as "python3 hc.py <h_fun_id--1/2> file.txt"
 import sys
 
 
@@ -29,34 +30,6 @@ def MoveGen(node):  # return neighbours of a node
         adjacent.append(array[xx][yy-1])
     return adjacent
 
-def best(adja,parent):
-    adj = []
-    for i in adja:
-        if(i.dis == -1  ):
-            adj.append(i)
-    adj.sort(key=lambda x: x.d)
-    # for i in adj:
-    #     print("ZZZZZZ",i.x," ",i.y," ",i.d ," ",parent.d)
-    temp = []
-    if(len(adj) != 0):
-        if(adj[0].d <= parent.d or adj[0].d == 0 ):
-            temp.append(adj[0])
-
-    return temp
-
-def VND(node):
-    adj = []
-    ind = 0
-    while(len(adj) < 1 or MoveGen(node) == None ):
-        adj = (best(MoveGen(node),node))
-        # print("MM ",len(adj))
-
-        temp = MoveGen(node)
-        temp.sort(key=lambda x: x.d)
-        node = temp[0]
-        ind = ind + 1
-        # print("||||||||||||",len(adj)," ",adj[0].x," ",adj[0].y)
-    return adj
 
 file = open(sys.argv[2], "r")    # opensing input file
 
@@ -65,18 +38,14 @@ for line in file:
     line = line[0:(len(line)-1)]
     temp_arr.append(line)
 file.close()
-nm = len(temp_arr)*len(temp_arr[0])
 
-array = list()  # list storing all values with node
+# list storing all values with node
+# creating node and putting in array
+array = [[Node() for j in range(len(temp_arr[0]))]
+         for i in range(len(temp_arr))]
+
 friends = list()   # list having same team player
 enemy = list()  # list having enemy team player
-
-for i in range(len(temp_arr)):  # creating node and putting in array
-    kk = []
-    for j in range(len(temp_arr[0])):
-        temp = Node()
-        kk.append(temp)
-    array.append(kk)
 
 goal_x = -1   # coordinate of goal state
 goal_y = -1
@@ -136,16 +105,15 @@ friends = [node for node in friends if node.value == 0 or node.value == 3]
 # defining Heuristic function
 if sys.argv[1] == '1':
     # First Heuristic function based on euclidian distance
-    for li in array:    
-        for node in li:
-            xx = node.x
-            yy = node.y
-            euclidean_distance = ((goal_x-xx)**2 + (goal_y-yy)**2)**(0.5)
-            node.d = euclidean_distance
+    for node in friends:
+        xx = node.x
+        yy = node.y
+        euclidean_distance = ((goal_x-xx)**2 + (goal_y-yy)**2)**(0.5)
+        node.d = euclidean_distance
 elif sys.argv[1] == '2':
     # second Heuristic function based on path length
     queue2 = list()
-    array[goal_x][goal_y].d = 1
+    array[goal_x][goal_y].d = 0
     queue2.append(array[goal_x][goal_y])
     while queue2:
         temp = queue2.pop(0)
@@ -163,14 +131,15 @@ opens = list()
 close = list()
 store = list()
 opens.append(array[0][0])
+nexp = 0
 while not finds:
-    for node in opens:
-        store.append(node)
+    # for node in opens:  #all nodes discarded includeing the best one
+    #     store.append(node)
     kk = opens.pop(0)  # taking best from opens list
+    nexp += 1
     print(kk)  # printing node visiting
     close.append(kk)
-    opens.clear()
-    if kk.value == 3:
+    if kk.value == 3:    # goal test
         finds = True
         time += 1
         break
@@ -180,27 +149,30 @@ while not finds:
     while queue:
         temp = queue.pop(0)
         time += 1
-        adjacent = VND(temp)  # getting neighbours
+        adjacent = MoveGen(temp)   # getting neighbours
         # removing already visited node
-        # print("++++++++++ ",adjacent[0].x," ",adjacent[0].y)
         adjacent = [node for node in adjacent if node.dis == -1]
         for node in adjacent:
             node.dis = temp.dis + 1   # updating distance
             node.parent = temp        # assigning parent
             if node.value == 0 or node.value == 3:
-                opens.append(node) #opens for target 3 and friends 0
+                opens.append(node)   # child
             else:
-                queue.append(node) #queue for blank nodes empty field
-    opens = [node for node in opens if node not in store]
-    # print("----- ",len(opens))
-    # opens.sort(key=lambda x: x.d)  # sorting opens based on distance
+                queue.append(node)
+    opens = [node for node in opens if node not in close]
+    opens.sort(key=lambda x: x.d)  # sorting opens based on distance
     for i in range(len(temp_arr)):
-        for j in range(len(temp_arr[0])):
+        for j in range(len(temp_arr[0])):  # reinitializing distance
             array[i][j].dis = -1
-    if len(opens) == 0 or kk.d < opens[0].d and opens[0].d != 0:
+   
+    if len(opens) == 0:
         print("\nproblem. can't find path.\n")
         break
+    if kk.d > opens[0].d and len(opens)>1: #here the if the best is  better than the current then only its kept --normal case
+        tt = opens.pop(0)                   #and if its stuck in local min i.e the best opens[0] isnt bettter than current then the further neighbours are kept
+        opens.clear()
+        opens.append(tt)                      
 
-
-print("\nTotal node explored: {0}".format(len(opens)+len(close)))
+# required output
+print("\nTotal node explored: {0}".format(nexp))
 print("Total time taken in term of steps: {0} ".format(time))
