@@ -2,7 +2,7 @@ import sys
 import math as m
 import random 
 # globals
-T = 10
+T = 20
 discov_count = 0
 
 class node:
@@ -108,15 +108,17 @@ for i in range(0,N):
     temp = node(coords[i][0],coords[i][1],0,i)
     nodelist[i] = temp
 
+
+ori_cost = path_cost(nodelist,adj) #original cost
+
 # random start city
 current = choose_random_neighbour(nodelist)
 current.discov = 1
 
-ori_cost = path_cost(nodelist,adj)
 path = sim_anneal(current,nodelist,adj)
 
-print("ori",ori_cost)
-print(path_cost(path,adj))
+print("ori_cost",ori_cost)
+print("new_cost",path_cost(path,adj))
 
 
 
