@@ -36,7 +36,10 @@ def Probability(current,neighbour,adj):
 def monoton_decre_T(k):
     global T
     if(int(sys.argv[2]) == 1):
-        T = T * 0.90
+        if T > 20:
+            T = T * 0.90
+        else:
+            T = 20
     elif(int(sys.argv[2]) == 2):
         T = T/( 1 + m.log(1+k) )
     elif(int(sys.argv[2]) == 3):

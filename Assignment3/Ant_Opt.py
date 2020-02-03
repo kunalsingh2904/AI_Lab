@@ -64,8 +64,8 @@ def path_cost(path,adj):
 
 
 def update_path_pheromones(path,Tau_Matrix,adj):
-        Rho = 0.4 ##evaporation coefficient
-        Q = 100 #costant
+        Rho = 0.6 ##evaporation coefficient
+        Q = 1 #costant
         delTau = Q/path_cost(path,adj)
 
 
@@ -91,7 +91,8 @@ def make_tour(nodelist,adj,Tau_Matrix):
         probability = probab(current,neighbour,nodelist,adj,Tau_Matrix)
         print("Pro",probability)
 
-        if random.random() <= probability :
+        if random.uniform(0,1) <= probability :
+            print("---------------------------------------------------------------")
             neighbour.discov = 1
             discov_count += 1
             path.append(neighbour)
@@ -166,11 +167,11 @@ for i in range(0,N):
     temp = node(coords[i][0],coords[i][1],0,i)
     nodelist[i] = temp
 
-m_ants = 1000
+m_ants = 50
 b = Ant_Opt(nodelist,adj,Tau_Matrix,m_ants)
 for i in nodelist:
     print(i.x," ",i.y)
-# print(path_cost(nodelist,adj))
+print(path_cost(nodelist,adj))
 print(b.cost)
 
 
