@@ -33,20 +33,28 @@ def Probability(current,neighbour,adj):
     P = (    1/(1+ m.exp( delE/T ))     ) 
     return P
 
-def monoton_decre_T():
+def monoton_decre_T(k):
     global T
-    T = T * 0.9
+    if(int(sys.argv[2]) == 1):
+        T = T * 0.90
+    elif(int(sys.argv[2]) == 2):
+        T = T/( 1 + m.log(1+k) )
+    elif(int(sys.argv[2]) == 3):
+        T = T /(1 + 0.5*k)
+
     
 def sim_anneal(current,nodelist,adj):
     global discov_count
     path = [current]
+    best_path = nodelist
     steps = 0
+    k = 0
     while(discov_count<=len(nodelist)-2):
         steps = 0
         while(steps < 5 and discov_count<=len(nodelist)-2):
             neighbour = choose_random_neighbour(nodelist)
             probab = Probability(current,neighbour,adj)
-            # print(probab)
+            print(probab)
             if (random.random() <= probab):
                 neighbour.discov = 1
                 discov_count += 1
@@ -54,9 +62,12 @@ def sim_anneal(current,nodelist,adj):
                 path.append(neighbour)
                 current = neighbour
                 steps += 1
-        monoton_decre_T()
+        if(path_cost(best_path,adj)>path_cost(path,adj)):
+            best_path = path
+        k += 1
+        monoton_decre_T(k)
         print("ZO",T)
-    return path
+    return best_path
 
 
 def path_cost(path,adj):
@@ -78,8 +89,12 @@ def path_cost(path,adj):
 
 
 
-
-
+if(int(sys.argv[2]) == 1):
+    T = 95
+elif(int(sys.argv[2]) == 2):
+    T = 200000000000
+elif(int(sys.argv[2]) == 3):
+    T = 2000
 
 
 

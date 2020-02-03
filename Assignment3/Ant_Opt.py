@@ -65,7 +65,7 @@ def path_cost(path,adj):
 
 def update_path_pheromones(path,Tau_Matrix,adj):
         Rho = 0.4 ##evaporation coefficient
-        Q = 1 #costant
+        Q = 100 #costant
         delTau = Q/path_cost(path,adj)
 
 
@@ -109,7 +109,7 @@ def Ant_Opt(nodelist,adj,Tau_Matrix,m_ants):
     conv_path  = [0,1]
     ind = 0
     kth_path = []
-    for z in range(1,3):  #this counter to be updated later with convergence criterion i.e same path getting repeated
+    for z in range(0,1):  #this counter to be updated later with convergence criterion i.e same path getting repeated
     # while(conv_path[0] != conv_path[1]):
         print("Z ",z)
         ind = (ind + 1)%2
@@ -166,9 +166,11 @@ for i in range(0,N):
     temp = node(coords[i][0],coords[i][1],0,i)
     nodelist[i] = temp
 
-m_ants = 100
+m_ants = 1000
 b = Ant_Opt(nodelist,adj,Tau_Matrix,m_ants)
-print(path_cost(nodelist,adj))
+for i in nodelist:
+    print(i.x," ",i.y)
+# print(path_cost(nodelist,adj))
 print(b.cost)
 
 
