@@ -2,7 +2,7 @@ import sys
 import math as m
 import random 
 # globals
-T = 20
+T = 90
 discov_count = 0
 
 class node:
@@ -33,7 +33,8 @@ def Probability(current,neighbour,adj):
     P = (    1/(1+ m.exp( delE/T ))     ) 
     return P
 
-def monoton_decre_T(T):
+def monoton_decre_T():
+    global T
     T = T * 0.9
     
 def sim_anneal(current,nodelist,adj):
@@ -45,7 +46,7 @@ def sim_anneal(current,nodelist,adj):
         while(steps < 5 and discov_count<=len(nodelist)-2):
             neighbour = choose_random_neighbour(nodelist)
             probab = Probability(current,neighbour,adj)
-            print(probab)
+            # print(probab)
             if (random.random() <= probab):
                 neighbour.discov = 1
                 discov_count += 1
@@ -53,8 +54,8 @@ def sim_anneal(current,nodelist,adj):
                 path.append(neighbour)
                 current = neighbour
                 steps += 1
-        monoton_decre_T(T)
-        # print("ZO",discov_count)
+        monoton_decre_T()
+        print("ZO",T)
     return path
 
 

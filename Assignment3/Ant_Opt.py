@@ -38,16 +38,17 @@ def pheromone(c,n,Tau_Matrix):
 
 def probab(current,neighbour,nodelist,adj,Tau_Matrix):
     Tau = pheromone(current,neighbour,adj)
-    Eta = 1/(cost(current,neighbour,Tau_Matrix))
-
-    sum_Tau_Eta = 1
+        
+    Eta = 1/(cost(current,neighbour,adj))
+   
+    sum_Tau_Eta = 0
     alpha = 1
     beta = 1
     for i in range(0,len(nodelist)):
-        if nodelist[i].discov == 0 and nodelist[i] != current:
-            sum_Tau_Eta += pheromone(current,nodelist[i],Tau_Matrix)**alpha * (1/(cost(current,nodelist[i],Tau_Matrix)))**beta
+        if nodelist[i].discov == 0 :
+            sum_Tau_Eta += (pheromone(current,nodelist[i],Tau_Matrix)**alpha) * (   (1/(cost(current,nodelist[i],Tau_Matrix)))**beta    )
 
-
+    # print(sum_Tau_Eta ," ", Tau ," ", Eta)
     return  (  Tau**alpha * Eta**beta   )/(   sum_Tau_Eta      )
 
 
@@ -63,22 +64,33 @@ def path_cost(path,adj):
 
 
 def update_path_pheromones(path,Tau_Matrix,adj):
-        Rho = 0.6 ##evaporation coefficient
-        Q = 10 #costant
+        Rho = 0.4 ##evaporation coefficient
+        Q = 1 #costant
         delTau = Q/path_cost(path,adj)
 
+
+
+        for i in range(0,len(Tau_Matrix)):
+            for j in range(0,len(Tau_Matrix)):
+                    Tau_Matrix[i][j] = (1 - Rho) * Tau_Matrix[i][j] + 0
+ 
+
         for i in range(0,len(path)-1):
-            Tau_Matrix[path[i].adj_index][path[i+1].adj_index] = (1 - Rho) * Tau_Matrix[path[i].adj_index][path[i+1].adj_index] + delTau
+            Tau_Matrix[path[i].adj_index][path[i+1].adj_index] =  Tau_Matrix[path[i].adj_index][path[i+1].adj_index] + delTau
+        
 
-
-def make_tour(current,nodelist,adj,Tau_Matrix):
+def make_tour(nodelist,adj,Tau_Matrix):
     for node in nodelist:
         node.discov = 0
     discov_count = 0
+    current = nodelist[0]
+    nodelist[0].discov = 1
     path = [current] #path of kth Ant
     while(discov_count <= len(nodelist)-2):
         neighbour = choose_random_neighbour(nodelist)
         probability = probab(current,neighbour,nodelist,adj,Tau_Matrix)
+        print("Pro",probability)
+
         if random.random() <= probability :
             neighbour.discov = 1
             discov_count += 1
@@ -93,19 +105,24 @@ def make_tour(current,nodelist,adj,Tau_Matrix):
 
 
 def Ant_Opt(nodelist,adj,Tau_Matrix,m_ants):
-    current = nodelist[0]
     best_path = best(float('inf'),[None]*len(nodelist))
-    conv_path  = [None]*2
+    conv_path  = [0,1]
     ind = 0
-    for z in range(1,10):  #this counter to be updated later with convergence criterion i.e same path getting repeated
+    kth_path = []
+    for z in range(1,3):  #this counter to be updated later with convergence criterion i.e same path getting repeated
+    # while(conv_path[0] != conv_path[1]):
+        print("Z ",z)
+        ind = (ind + 1)%2
         for i in range (0,m_ants):
-            kth_path = make_tour(current,nodelist,adj,Tau_Matrix)
-
+            kth_path = make_tour(nodelist,adj,Tau_Matrix)
+            print("I",i)
             if path_cost(kth_path,adj) < best_path.cost:    #update best path
                 best_path.cost = path_cost(kth_path,adj)
                 best_path.path = kth_path
 
             update_path_pheromones(kth_path,Tau_Matrix,adj)    # Update pheromones of each edge of this path after the tour
+    conv_path[ind] = kth_path
+    
     return best_path
 
 
