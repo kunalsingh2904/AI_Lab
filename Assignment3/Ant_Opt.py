@@ -43,7 +43,7 @@ def probab(current,neighbour,nodelist,adj,Tau_Matrix):
    
     sum_Tau_Eta = 0
     alpha = 1
-    beta = 1
+    beta = 1.01
     for i in range(0,len(nodelist)):
         if nodelist[i].discov == 0 :
             sum_Tau_Eta += (pheromone(current,nodelist[i],Tau_Matrix)**alpha) * (   (1/(cost(current,nodelist[i],Tau_Matrix)))**beta    )
@@ -60,7 +60,7 @@ def path_cost(path,adj):
     for i in range(1,len(path)):
         cost_p += cost(current,path[i],adj)
         current = path[i]
-    return cost_p
+    return cost_p + cost(path[len(path)-1],path[0],adj)
 
 
 def update_path_pheromones(path,Tau_Matrix,adj):
@@ -83,16 +83,15 @@ def make_tour(nodelist,adj,Tau_Matrix):
     for node in nodelist:
         node.discov = 0
     discov_count = 0
-    current = nodelist[0]
-    nodelist[0].discov = 1
+    current = choose_random_neighbour(nodelist) #choose random start city for kth ant
+    current.discov = 1
     path = [current] #path of kth Ant
     while(discov_count <= len(nodelist)-2):
         neighbour = choose_random_neighbour(nodelist)
         probability = probab(current,neighbour,nodelist,adj,Tau_Matrix)
-        print("Pro",probability)
+        # print("Pro",probability)
 
         if random.uniform(0,1) <= probability :
-            print("---------------------------------------------------------------")
             neighbour.discov = 1
             discov_count += 1
             path.append(neighbour)
@@ -109,11 +108,8 @@ def Ant_Opt(nodelist,adj,Tau_Matrix,m_ants):
     best_path = best(float('inf'),[None]*len(nodelist))
 
     kth_path = []
-    # for z in range(0,1):  #this counter to be updated later with convergence criterion i.e same path getting repeated
-    # while(conv_path[0] != conv_path[1]):
     for i in range (0,m_ants):
-        kth_path = make_tour(nodelist,adj,Tau_Matrix)
-        print("I",i)
+        kth_path = make_tour(nodelist,adj,Tau_Matrix)   #make tour for kth ant
         if path_cost(kth_path,adj) < best_path.cost:    #update best path
             best_path.cost = path_cost(kth_path,adj)
             best_path.path = kth_path
@@ -140,7 +136,7 @@ f = open(sys.argv[1],"r")
 dist_type = f.readline().rstrip()
 N = int(f.readline())
 
-print(dist_type,N)
+# print(dist_type,N)
 
 coords = [[None]*2]*N
 adj = [[None]*N]*N
@@ -164,11 +160,15 @@ for i in range(0,N):
     nodelist[i] = temp
 
 m_ants = 50
+
 b = Ant_Opt(nodelist,adj,Tau_Matrix,m_ants)
-for i in nodelist:
-    print(i.x," ",i.y)
-print(path_cost(nodelist,adj))
+
 print(b.cost)
+
+for i in b.path:
+    print(i.adj_index,end=" ")
+# print(path_cost(nodelist,adj))
+
 
 
 

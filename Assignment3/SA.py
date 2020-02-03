@@ -57,7 +57,7 @@ def sim_anneal(current,nodelist,adj):
         while(steps < 5 and discov_count<=len(nodelist)-2):
             neighbour = choose_random_neighbour(nodelist)
             probab = Probability(current,neighbour,adj)
-            print(probab)
+            # print(probab)
             if (random.random() <= probab):
                 neighbour.discov = 1
                 discov_count += 1
@@ -69,7 +69,7 @@ def sim_anneal(current,nodelist,adj):
             best_path = path
         k += 1
         monoton_decre_T(k)
-        print("ZO",T)
+        # print("ZO",T)
     return best_path
 
 
@@ -79,7 +79,7 @@ def path_cost(path,adj):
     for i in range(1,len(path)):
         cost += eval(current,path[i],adj)
         current = path[i]
-    return cost
+    return cost + eval(path[len(path)-1],path[0],adj)
 
 
 
@@ -106,7 +106,7 @@ f = open(sys.argv[1],"r")
 dist_type = f.readline().rstrip()
 N = int(f.readline())
 
-print(dist_type,N)
+# print(dist_type,N)
 
 coords = [[None]*2]*N
 adj = [[None]*N]*N
@@ -136,9 +136,13 @@ current.discov = 1
 
 path = sim_anneal(current,nodelist,adj)
 
-print("ori_cost",ori_cost)
-print("new_cost",path_cost(path,adj))
+# print("ori_cost",ori_cost)
+# print("new_cost",path_cost(path,adj))
 
+print(path_cost(path,adj))
+
+for i in path:
+    print(i.adj_index,end=" ")
 
 
 
