@@ -107,22 +107,18 @@ def make_tour(nodelist,adj,Tau_Matrix):
 
 def Ant_Opt(nodelist,adj,Tau_Matrix,m_ants):
     best_path = best(float('inf'),[None]*len(nodelist))
-    conv_path  = [0,1]
-    ind = 0
-    kth_path = []
-    for z in range(0,1):  #this counter to be updated later with convergence criterion i.e same path getting repeated
-    # while(conv_path[0] != conv_path[1]):
-        print("Z ",z)
-        ind = (ind + 1)%2
-        for i in range (0,m_ants):
-            kth_path = make_tour(nodelist,adj,Tau_Matrix)
-            print("I",i)
-            if path_cost(kth_path,adj) < best_path.cost:    #update best path
-                best_path.cost = path_cost(kth_path,adj)
-                best_path.path = kth_path
 
-            update_path_pheromones(kth_path,Tau_Matrix,adj)    # Update pheromones of each edge of this path after the tour
-    conv_path[ind] = kth_path
+    kth_path = []
+    # for z in range(0,1):  #this counter to be updated later with convergence criterion i.e same path getting repeated
+    # while(conv_path[0] != conv_path[1]):
+    for i in range (0,m_ants):
+        kth_path = make_tour(nodelist,adj,Tau_Matrix)
+        print("I",i)
+        if path_cost(kth_path,adj) < best_path.cost:    #update best path
+            best_path.cost = path_cost(kth_path,adj)
+            best_path.path = kth_path
+
+        update_path_pheromones(kth_path,Tau_Matrix,adj)    # Update pheromones of each edge of this path after the tour
     
     return best_path
 
