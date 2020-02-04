@@ -37,19 +37,23 @@ def pheromone(c,n,Tau_Matrix):
 
 
 def probab(current,neighbour,nodelist,adj,Tau_Matrix):
-    Tau = pheromone(current,neighbour,adj)
-        
-    Eta = 1/(cost(current,neighbour,adj))
+    
    
     sum_Tau_Eta = 0
-    alpha = 1
+    alpha = 2
     beta = 1.01
+    Tau_ = pheromone(current,neighbour,Tau_Matrix) ** alpha
+    Eta_ = 1/(cost(current,neighbour,adj)) ** beta
+    
     for i in range(0,len(nodelist)):
         if nodelist[i].discov == 0 :
-            sum_Tau_Eta += (pheromone(current,nodelist[i],Tau_Matrix)**alpha) * (   (1/(cost(current,nodelist[i],Tau_Matrix)))**beta    )
+            sum_Tau_Eta += (pheromone(current,nodelist[i],Tau_Matrix)**alpha) * (   (1/(cost(current,nodelist[i],adj)))**beta    )
 
     # print(sum_Tau_Eta ," ", Tau ," ", Eta)
-    return  (  Tau**alpha * Eta**beta   )/(   sum_Tau_Eta      )
+    if sum_Tau_Eta == 0:
+        return 1
+    p = (  Tau_* Eta_   )/(   sum_Tau_Eta      )
+    return  p
 
 
 
@@ -89,7 +93,7 @@ def make_tour(nodelist,adj,Tau_Matrix):
     while(discov_count <= len(nodelist)-2):
         neighbour = choose_random_neighbour(nodelist)
         probability = probab(current,neighbour,nodelist,adj,Tau_Matrix)
-        # print("Pro",probability)
+        print("Pro",probability)
 
         if random.uniform(0,1) <= probability :
             neighbour.discov = 1
