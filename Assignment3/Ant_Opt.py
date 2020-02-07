@@ -22,7 +22,7 @@ class node:
     def display(self):
         print("x",self.x," y",self.y," discov",self.discov)
 # ----------------------------------------------------------
-def choose_random_neighbour(nodelist):
+def choose_random_neighbour(nodelist): #choose random neighbour with probability = 1/N
     n = len(nodelist)
     while(1):
         neighbour = nodelist[random.randrange(0,N)]
@@ -36,7 +36,7 @@ def pheromone(c,n,Tau_Matrix):
     return Tau_Matrix[c.adj_index][n.adj_index]
 
 
-def probab(current,neighbour,nodelist,adj,Tau_Matrix):
+def probab(current,neighbour,nodelist,adj,Tau_Matrix):  #return probability of (current,neighbour) by the given formula
     
    
     sum_Tau_Eta = 0
@@ -58,7 +58,7 @@ def probab(current,neighbour,nodelist,adj,Tau_Matrix):
 
 
 
-def path_cost(path,adj):
+def path_cost(path,adj):    #cost of the tour path including return to start city
     current = path[0]
     cost_p = 0
     for i in range(1,len(path)):
@@ -67,7 +67,7 @@ def path_cost(path,adj):
     return cost_p + cost(path[len(path)-1],path[0],adj)
 
 
-def update_path_pheromones(path,Tau_Matrix,adj):
+def update_path_pheromones(path,Tau_Matrix,adj):    #after an ant has toured update the city/nodes with pheromones by given formula
         Rho = 0.6 ##evaporation coefficient
         Q = 1 #costant
         delTau = Q/path_cost(path,adj)
@@ -83,14 +83,14 @@ def update_path_pheromones(path,Tau_Matrix,adj):
             Tau_Matrix[path[i].adj_index][path[i+1].adj_index] =  Tau_Matrix[path[i].adj_index][path[i+1].adj_index] + delTau
         
 
-def make_tour(nodelist,adj,Tau_Matrix):
+def make_tour(nodelist,adj,Tau_Matrix): #make a tour for an ant
     for node in nodelist:
         node.discov = 0
     discov_count = 0
     current = choose_random_neighbour(nodelist) #choose random start city for kth ant
     current.discov = 1
     path = [current] #path of kth Ant
-    while(discov_count <= len(nodelist)-2):
+    while(discov_count <= len(nodelist)-2): #while nodes left
         neighbour = choose_random_neighbour(nodelist)
         probability = probab(current,neighbour,nodelist,adj,Tau_Matrix)
         print("Pro",probability)
@@ -108,7 +108,7 @@ def make_tour(nodelist,adj,Tau_Matrix):
 
 
 
-def Ant_Opt(nodelist,adj,Tau_Matrix,m_ants):
+def Ant_Opt(nodelist,adj,Tau_Matrix,m_ants):    #get the best tour after all ants exhausted
     best_path = best(float('inf'),[None]*len(nodelist))
 
     kth_path = []
@@ -159,7 +159,7 @@ for i in range(0,N):
 #     print(adj[i])
 
 nodelist = [None]*N
-for i in range(0,N):
+for i in range(0,N): #making list of nodes/cities
     temp = node(coords[i][0],coords[i][1],0,i)
     nodelist[i] = temp
 
