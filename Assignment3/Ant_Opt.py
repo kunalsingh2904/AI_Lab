@@ -40,8 +40,8 @@ def probab(current,neighbour,nodelist,adj,Tau_Matrix):  #return probability of (
     
    
     sum_Tau_Eta = 0
-    alpha = 2
-    beta = 1.01
+    alpha = 0.5
+    beta = 1.2
     Tau_ = pheromone(current,neighbour,Tau_Matrix) ** alpha
     Eta_ = 1/(cost(current,neighbour,adj)) ** beta
     
@@ -68,8 +68,8 @@ def path_cost(path,adj):    #cost of the tour path including return to start cit
 
 
 def update_path_pheromones(path,Tau_Matrix,adj):    #after an ant has toured update the city/nodes with pheromones by given formula
-        Rho = 0.6 ##evaporation coefficient
-        Q = 1 #costant
+        Rho = 0.4 ##evaporation coefficient
+        Q = 1000 #costant
         delTau = Q/path_cost(path,adj)
 
 
@@ -93,7 +93,7 @@ def make_tour(nodelist,adj,Tau_Matrix): #make a tour for an ant
     while(discov_count <= len(nodelist)-2): #while nodes left
         neighbour = choose_random_neighbour(nodelist)
         probability = probab(current,neighbour,nodelist,adj,Tau_Matrix)
-        print("Pro",probability)
+        # print("Pro",probability)
 
         if random.uniform(0,1) <= probability :
             neighbour.discov = 1
@@ -112,13 +112,14 @@ def Ant_Opt(nodelist,adj,Tau_Matrix,m_ants):    #get the best tour after all ant
     best_path = best(float('inf'),[None]*len(nodelist))
 
     kth_path = []
-    for i in range (0,m_ants):
-        kth_path = make_tour(nodelist,adj,Tau_Matrix)   #make tour for kth ant
-        if path_cost(kth_path,adj) < best_path.cost:    #update best path
-            best_path.cost = path_cost(kth_path,adj)
-            best_path.path = kth_path
+    for i in range(0,1):
+        for i in range (0,m_ants):
+            kth_path = make_tour(nodelist,adj,Tau_Matrix)   #make tour for kth ant
+            if path_cost(kth_path,adj) < best_path.cost:    #update best path
+                best_path.cost = path_cost(kth_path,adj)
+                best_path.path = kth_path
 
-        update_path_pheromones(kth_path,Tau_Matrix,adj)    # Update pheromones of each edge of this path after the tour
+            update_path_pheromones(kth_path,Tau_Matrix,adj)    # Update pheromones of each edge of this path after the tour
     
     return best_path
 
