@@ -1,155 +1,99 @@
-import sys
-import math as m
-import random 
-# globals
-T = 90
-discov_count = 0
-
-class node:
-    def __init__(self,x,y,discov,adj_index):
-        self.x = x
-        self.y = y
-        self.discov = discov
-        self.adj_index = adj_index
-
-    def display(self):
-        print("x",self.x," y",self.y," discov",self.discov)
-# ----------------------------------------------------------
-def choose_random_neighbour(nodelist):
-    n = len(nodelist)
-    while(1):
-        neighbour = nodelist[random.randrange(0,N)]
-        if neighbour.discov == 0:
-            return neighbour
+import random
+import sys              # Importing required library
+import numpy as np
 
 
-def eval(c,n,adj):
-    return adj[c.adj_index][n.adj_index]
-    
+class SimulatedAnnealing():
+    def __init__(self, input_file):   # constructor
+        with open(input_file) as fp:        # opening file
+            lines = fp.readlines()          # reading lines
+            self.num_of_cities = int(lines[1])      # no of cities
+
+            self.cities = []        # storing cities
+            for line in lines[2:self.num_of_cities + 2]:
+                city = line.strip().split(' ')
+                self.cities.append(tuple(city))     # storing coordinates
+
+            self.distance_matrix = []       # distance matrix
+            for dist in lines[self.num_of_cities + 2:]:
+                distance = dist.strip().split(' ')
+                self.distance_matrix.append(
+                    [float(x) for x in distance])       # storing values
+
+    def random_tour(self):
+        tour = list(range(self.num_of_cities))      # creating tour list
+        random.shuffle(tour)        # randoming the index
+        return tour     # return random list
+
+    def eval(self, tour):
+        cost = 0        # cost
+        for i in range(self.num_of_cities):     # calculating cost
+            cost += self.distance_matrix[tour[i]
+                                         ][tour[(i+1) % self.num_of_cities]]        # updating cost
+        return cost         # return Total cost
+
+    def random_neighbour(self, tour):
+        new_tour = tour.copy()      # copying tour in temporary list
+        # returns a particular length list of items chosen from the sequence
+        random_city = random.sample(range(self.num_of_cities), 2)
+        new_tour[random_city[0]], new_tour[random_city[1]
+                                           ] = tour[random_city[1]], tour[random_city[0]]  # Updating
+        return new_tour     # returning new tour
+
+    def print_tour(self, tour):
+        # with open('Output_Simulated.txt', "w") as f:      # writing desired output in file
+        #     f.write(str(self.eval(tour)))
+        #     f.write("\n")
+        #     for city in tour:
+                # f.write(str(self.cities.index(
+                #     tuple((self.cities[city][0], self.cities[city][1])))))
+        #         f.write(" ")
+        #     f.write("\n")
+
+        print(self.eval(tour))      # Print Cost
+        for city in tour:           # print path index
+            print(self.cities.index(
+                tuple((self.cities[city][0], self.cities[city][1]))), end=" ")
+        print()
+
+    def cooling(self, temperature, time, func_type=1):      # cooling function
+        if func_type == 1:
+            return temperature / 10         # type 1
+        if func_type == 2:
+            return temperature / (time + 1)             # type 2
+        if func_type == 3:
+            return temperature / ((time + 1) ** 2)          # type 3
+        if func_type == 4:
+            return (temperature) / ((1001 - time))          # type 4
+        if func_type == 5:
+            return temperature - (time * 10)                # type 5
+
+    def simulated_annealing(self):              # Main Algorithm
+        tour = self.random_tour()           # random index list
+        best_tour = tour        # initialization
+        temperature = 10000             # starting temprature
+        num_of_epochs = 1000  # No of epochs
+        for time in range(num_of_epochs):       # Running no of epoch time
+            while temperature > 1.00000000022e-300:     # termination criteria
+                neighbour = self.random_neighbour(
+                    tour)   # new random index list
+                delta_eval = self.eval(neighbour) - \
+                    self.eval(tour)               # cost difference
+                if random.uniform(0, 1) < sigmoid(delta_eval / temperature):
+                    tour = neighbour                # updating tour
+                    if self.eval(tour) < self.eval(best_tour):
+                        best_tour = tour        # taking best tour
+                    temperature = self.cooling(
+                        temperature, time, func_type=4)      # cooling temprature
+                    break
+        return best_tour        # Done
 
 
-def Probability(current,neighbour,adj):
-    delE = eval(current,neighbour,adj)
-    P = (    1/(1+ m.exp( delE/T ))     ) 
-    return P
-
-def monoton_decre_T(k):
-    global T
-    if(int(sys.argv[2]) == 1):
-        if T > 20:
-            T = T * 0.90
-        else:
-            T = 20
-    elif(int(sys.argv[2]) == 2):
-        T = T/( 1 + m.log(1+k) )
-    elif(int(sys.argv[2]) == 3):
-        T = T /(1 + 0.5*k)
-
-    
-def sim_anneal(current,nodelist,adj):
-    global discov_count
-    path = [current]
-    best_path = nodelist
-    steps = 0
-    k = 0
-    while(discov_count<=len(nodelist)-2):
-        steps = 0
-        while(steps < 5 and discov_count<=len(nodelist)-2):
-            neighbour = choose_random_neighbour(nodelist)
-            probab = Probability(current,neighbour,adj)
-            # print(probab)
-            if (random.random() <= probab):
-                neighbour.discov = 1
-                discov_count += 1
-                # print(discov_count)
-                path.append(neighbour)
-                current = neighbour
-                steps += 1
-        if(path_cost(best_path,adj)>path_cost(path,adj)):
-            best_path = path
-        k += 1
-        monoton_decre_T(k)
-        # print("ZO",T)
-    return best_path
+def sigmoid(x):         # sigmoid function(increasing)
+    np.seterr(over='ignore')        # ignore error
+    return 1 / (1 + np.exp(x))  # function
 
 
-def path_cost(path,adj):
-    current = path[0]
-    cost = 0
-    for i in range(1,len(path)):
-        cost += eval(current,path[i],adj)
-        current = path[i]
-    return cost + eval(path[len(path)-1],path[0],adj)
-
-
-
-
-
-
-
-
-
-
-
-
-if(int(sys.argv[2]) == 1):
-    T = 95
-elif(int(sys.argv[2]) == 2):
-    T = 200000000000
-elif(int(sys.argv[2]) == 3):
-    T = 2000
-
-
-
-f = open(sys.argv[1],"r")
-
-dist_type = f.readline().rstrip()
-N = int(f.readline())
-
-# print(dist_type,N)
-
-coords = [[None]*2]*N
-adj = [[None]*N]*N
-
-for i in range(0,N):
-    coords[i] = list(map(lambda x: float(x), list(f.readline().rstrip().split(" "))))
-for i in range(0,N):
-    adj[i] = list(map(lambda x: float(x), list(f.readline().rstrip().split(" "))))
-
-# for i in range(0,N):
-#     print(coords[i])
-
-# for i in range(0,N):
-#     print(adj[i])
-
-nodelist = [None]*N
-for i in range(0,N):
-    temp = node(coords[i][0],coords[i][1],0,i)
-    nodelist[i] = temp
-
-
-ori_cost = path_cost(nodelist,adj) #original cost
-
-# random start city
-current = choose_random_neighbour(nodelist)
-current.discov = 1
-
-path = sim_anneal(current,nodelist,adj)
-
-# print("ori_cost",ori_cost)
-# print("new_cost",path_cost(path,adj))
-
-print(path_cost(path,adj))
-
-for i in path:
-    print(i.adj_index,end=" ")
-
-
-
-
-# print(choose_random_neighbour(nodelist).display())
-
-
-# delE = 13
-# T = 10
-# print(  1/(1+ m.exp( (delE)/T  ) )    )
+tsp = SimulatedAnnealing(sys.argv[1])       # calling constructor
+tour = tsp.simulated_annealing()        # Best tour
+tsp.print_tour(tour)            # printing
