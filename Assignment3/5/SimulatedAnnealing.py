@@ -68,6 +68,7 @@ class SimulatedAnnealing(TravellingSalesman):
             return temperature / ((time + 1) ** 2)
         if func_type == 4:
             return (temperature) / ((1001 - time))
+            # return (temperature) / ((1 + np.log(1+time)))
         if func_type == 5:
             return temperature - (time * 10)
 

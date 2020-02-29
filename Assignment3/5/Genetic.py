@@ -65,7 +65,7 @@ def Eval(sol):
 
 
 def GeneticAlgorithm():
-    population_size = 60
+    population_size = 100
     k = random.randint(0, population_size/2)
     population = PriorityQueue()
     # population_eval = []

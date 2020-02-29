@@ -21,7 +21,6 @@ class node:
 
     def display(self):
         print("x",self.x," y",self.y," discov",self.discov)
-
 # ----------------------------------------------------------
 def choose_random_neighbour(nodelist): #choose random neighbour with probability = 1/N
     n = len(nodelist)
@@ -41,15 +40,16 @@ def probab(current,neighbour,nodelist,adj,Tau_Matrix):  #return probability of (
     
    
     sum_Tau_Eta = 0
-    alpha = 100
-    beta = 100
+    alpha = 0.5
+    beta = 1.2
     Tau_ = pheromone(current,neighbour,Tau_Matrix) ** alpha
     Eta_ = 1/(cost(current,neighbour,adj)) ** beta
     
     for i in range(0,len(nodelist)):
         if nodelist[i].discov == 0 :
             sum_Tau_Eta += (pheromone(current,nodelist[i],Tau_Matrix)**alpha) * (   (1/(cost(current,nodelist[i],adj)))**beta    )
-    #print(sum_Tau_Eta ," ", Tau ," ", Eta)
+
+    # print(sum_Tau_Eta ," ", Tau ," ", Eta)
     if sum_Tau_Eta == 0:
         return 1
     p = (  Tau_* Eta_   )/(   sum_Tau_Eta      )
@@ -67,23 +67,20 @@ def path_cost(path,adj):    #cost of the tour path including return to start cit
     return cost_p + cost(path[len(path)-1],path[0],adj)
 
 
-def update_path_pheromones(path_list,Tau_Matrix,adj):    #after an ant has toured update the city/nodes with pheromones by given formula
-        Rho = 0.2 ##evaporation coefficient
-        Q = 1 #costant
+def update_path_pheromones(path,Tau_Matrix,adj):    #after an ant has toured update the city/nodes with pheromones by given formula
+        Rho = 0.4 ##evaporation coefficient
+        Q = 1000 #costant
+        delTau = Q/path_cost(path,adj)
+
+
 
         for i in range(0,len(Tau_Matrix)):
             for j in range(0,len(Tau_Matrix)):
                     Tau_Matrix[i][j] = (1 - Rho) * Tau_Matrix[i][j] + 0
+ 
 
-        #calc sum of the deposits of m_ants for a single segment 
-        # 1st,last for each path
-        for path in path_list:
-            Tau_Matrix[path[len(path)-1].adj_index][path[0].adj_index] += Q/path_cost(path,adj)
-        # now consecutives of each path
-        for path in path_list:
-            for i in range(0,len(path)-1):
-                Tau_Matrix[path[i].adj_index][path[i+1].adj_index] += Q/path_cost(path,adj)
-
+        for i in range(0,len(path)-1):
+            Tau_Matrix[path[i].adj_index][path[i+1].adj_index] =  Tau_Matrix[path[i].adj_index][path[i+1].adj_index] + delTau
         
 
 def make_tour(nodelist,adj,Tau_Matrix): #make a tour for an ant
@@ -111,22 +108,18 @@ def make_tour(nodelist,adj,Tau_Matrix): #make a tour for an ant
 
 
 
-def Ant_Opt(nodelist,adj,Tau_Matrix,m_ants,epochs):    #get the best tour after all ants exhausted
+def Ant_Opt(nodelist,adj,Tau_Matrix,m_ants,antcount):    #get the best tour after all ants exhausted
     best_path = best(float('inf'),[None]*len(nodelist))
 
     kth_path = []
-    path_list = [[None]*len(nodelist)]*m_ants
-    for iterat in range(0,epochs):
-        print("------------iter",iterat)
+    for zz in range(0,1):
         for i in range (0,m_ants):
-            print("ant",i)
-            kth_path = make_tour(nodelist,adj,Tau_Matrix)   #make tour for kth ant
-            path_list[i] = kth_path                         #update kth path in list of paths for m_ants
+            kth_path = make_tour(nodelist,adj,Tau_Matrix,antcount)   #make tour for kth ant
             if path_cost(kth_path,adj) < best_path.cost:    #update best path
                 best_path.cost = path_cost(kth_path,adj)
                 best_path.path = kth_path
 
-        update_path_pheromones(path_list,Tau_Matrix,adj)    # Update pheromones for all edges that the batch of m_ants travelled in this iteration 
+            update_path_pheromones(kth_path,Tau_Matrix,adj)    # Update pheromones of each edge of this path after the tour
     
     return best_path
 
@@ -153,7 +146,7 @@ N = int(f.readline())
 coords = [[None]*2]*N
 adj = [[None]*N]*N
 Tau_Matrix = [[1]*N]*N #Pheromone depositite inititially with 1
-
+antcount = [[0]*N]*N
 
 for i in range(0,N):
     coords[i] = list(map(lambda x: float(x), list(f.readline().rstrip().split(" "))))
@@ -171,9 +164,9 @@ for i in range(0,N): #making list of nodes/cities
     temp = node(coords[i][0],coords[i][1],0,i)
     nodelist[i] = temp
 
-m_ants = 20
-epochs = 10
-b = Ant_Opt(nodelist,adj,Tau_Matrix,m_ants,epochs)
+m_ants = 100
+
+b = Ant_Opt(nodelist,adj,Tau_Matrix,m_ants,antcount)
 
 print(b.cost)
 

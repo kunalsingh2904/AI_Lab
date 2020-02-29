@@ -84,7 +84,7 @@ class SimulatedAnnealing():
                     if self.eval(tour) < self.eval(best_tour):
                         best_tour = tour        # taking best tour
                     temperature = self.cooling(
-                        temperature, time, func_type=4)      # cooling temprature
+                        temperature, time, func_type=5)      # cooling temprature
                     break
         return best_tour        # Done
 
