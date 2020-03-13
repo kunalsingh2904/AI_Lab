@@ -28,12 +28,13 @@ def insert(root):
     """
     root.data = int(input("Enter data of node : "))
     # taking input as number of child
-    print("Enter number of nodes for value ", root.data, " :")
+    print("Enter number of sets for value ", root.data, " :")
     or_no = int(input())
     for i in range(or_no):
         ans = list()
         # Taking no of and node as input
-        print("Enter number of AND nodes for", i+1, root.data, ":")
+        print("Enter number of AND nodes for branch no.",
+              i+1, " of ", root.data, ":")
         and_no = int(input())
         for _ in range(and_no):
             n = node()
@@ -101,7 +102,6 @@ def aostar(root):
                 n.data = final_cost
                 n.mark = True       # mark the explored node
             print("Marked: ", n.data)
-
         for i in range(20):
             print("=", end="")
         print()
@@ -128,10 +128,11 @@ def aostar(root):
 
 
 def printgraph(root):
-    """[print graph in lavel order traversal]
+    """[print graph pre-order traversal]
 
     Arguments:
-        root {[node]} -- [start with root node and print all child]
+        root {[node]} -- [start with root node and print all child following pre-order traversal]
+        (print-->left-->right)
     """
     if root:
         print(root.data, " ")
