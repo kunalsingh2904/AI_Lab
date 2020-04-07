@@ -1,0 +1,95 @@
+Enter data of node : 1
+Enter number of sets for value  1  :
+1
+Enter number of AND nodes for branch no. 1  of  1 :
+2
+Enter data of node : 0
+Enter number of sets for value  0  :
+2
+Enter number of AND nodes for branch no. 1  of  0 :
+1
+Enter data of node : 2
+Enter number of sets for value  2  :
+1
+Enter number of AND nodes for branch no. 1  of  2 :
+2
+Enter data of node : 3
+Enter number of sets for value  3  :
+0
+Enter data of node : 4
+Enter number of sets for value  4  :
+0
+Enter number of AND nodes for branch no. 2  of  0 :
+1
+Enter data of node : 1
+Enter number of sets for value  1  :
+1
+Enter number of AND nodes for branch no. 1  of  1 :
+2
+Enter data of node : 4
+Enter number of sets for value  4  :
+0
+Enter data of node : 5
+Enter number of sets for value  5  :
+0
+Enter data of node : 2
+Enter number of sets for value  2  :
+2
+Enter number of AND nodes for branch no. 1  of  2 :
+1
+Enter data of node : 3
+Enter number of sets for value  3  :
+0
+Enter number of AND nodes for branch no. 2  of  2 :
+1
+Enter data of node : 1
+Enter number of sets for value  1  :
+0
+
+Enter the edge cost: 2
+the tree is as follows:
+1  
+0  
+2  
+3  
+4  
+1  
+4  
+5  
+2  
+3  
+1  
+
+Exploring:  1
+Marked:  6
+====================
+
+Exploring:  0
+Marked:  3
+Exploring:  2
+Marked:  3
+====================
+6  
+
+Exploring:  1
+Marked:  13
+====================
+10  
+3  
+
+Exploring:  2
+Marked:  11
+====================
+10  
+4  
+
+Exploring:  3
+Marked:  3
+Exploring:  4
+Marked:  4
+====================
+11  
+13  
+11  
+
+The minimum cost is:  20
